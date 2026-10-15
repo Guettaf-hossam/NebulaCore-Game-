@@ -2,6 +2,7 @@
 
 A browser-based terminal puzzle game set inside the "Nebula Core" digital ark.
 Solve ciphers, number sequences and steganography riddles to purge the viral entity **Azathoth**.
+ Attention: Please zoom out to 67% to view the game properly.
 
 Built with vanilla HTML/CSS/JS and [Three.js](https://threejs.org/) (loaded from a CDN).
 
