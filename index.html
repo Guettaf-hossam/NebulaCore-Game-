@@ -1,0 +1,172 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0, user-scalable=no">
+<title>NEBULA CORE · GREEN HOLO · CRYPTO LESSON</title>
+<script src="https://cdn.jsdelivr.net/npm/three@0.160.0/build/three.min.js"></script>
+<link href="https://fonts.googleapis.com/css2?family=Orbitron:wght@400;700;900&family=VT323&display=swap" rel="stylesheet">
+<link rel="stylesheet" href="css/style.css">
+</head>
+<body>
+<div class="star-field"></div>
+<canvas id="starsCanvas"></canvas>
+
+<div id="loading">
+    <div>⟡ NEBULA CORE · GREEN PROTOCOL ⟡</div>
+    <div class="loadingBar"><div class="loadingFill"></div></div>
+    <div style="font-size:12px; margin-top:12px;">INITIALIZING EMERALD HOLOGRAM...</div>
+</div>
+
+<div id="container">
+    <div id="left">
+        <div id="title">
+            <span class="highlight">// NEBULA CORE //</span><br>
+            GREEN HOLOGRAPHIC INTERFACE
+        </div>
+        <div id="statusBar">
+             SYSTEM INTEGRITY <span id="sysPercent">0%</span>
+            <div id="progress"><div id="progressFill"></div></div>
+            <div id="securityNote" style="font-size:10px; margin-top:6px;"> ▶DEEP ARCHIVE ACTIVE | PUZZLES: 0/5 | LESSONS: 2</div>
+        </div>
+        <div id="terminal"></div>
+        <input id="input" placeholder=">_  ENTER COMMAND (type 'puzzles' to see all puzzles)" autofocus>
+    </div>
+    <div id="right">
+        <div id="memory">
+            <b> CRYPTIC NOTE · 2084</b><br><br>
+            “The creator sealed an anomaly inside the code. Only the true name can unlock the purge sequence.”
+        </div>
+        <div id="planetBox"><canvas id="globe"></canvas></div>
+        <div id="files">
+            ✉<span style="color:#d4ff9e;">SYSTEM_FILES</span><br><br>
+            <div class="file" id="corelogBtn">▶ CORE.log</div>
+            <div class="file" id="aiSignalBtn">▶ AI.signal </div>
+            <div class="file" id="virusBtn"> ☠︎virus.trace</div>
+            <div class="file" id="humanMemoryBtn">▶ human_memory.dat</div>
+            <div class="file" id="finalMsgBtn">▶ final_message.log </div>
+            <div class="file" id="deepArchiveBtn">▶ deep_archive.sys </div>
+            <div class="file" id="cryptoLessonBtn"> crypto_less.dat</div>
+            <div class="file" id="stegoLessonBtn"> steganography_less_data</div>
+        </div>
+    </div>
+</div>
+
+<!-- VIRUS WINDOW -->
+<div id="virusWindow" class="virus-window">
+    <div class="window-header">
+        ▌ KARMIC ENGINE · INFECTED ENTITY ▌
+        <span onclick="closeVirusWindow()" style="cursor:pointer;">✖</span>
+    </div>
+    <div class="window-content">
+        <img id="virusImage" class="window-image" alt="ENTITY">
+        <div class="window-data">
+            <div class="virus-title">☠ CORE VIRUS : AZATHOTH ☠</div>
+            ▶ ENTITY ID : ECHO-7<br>
+            ▶ ORIGIN : FRAGMENTED HUMAN ANGUISH<br>
+            ▶ CORRUPTION RATE : 97% <br>
+            ▶ THREAT LEVEL : OMEGA<br>
+            ▶ MEMORY OVERRIDE : ACTIVE<br><br>
+            <div class="scanBar"><div class="scanFill"></div></div>
+            <br>
+            ▌ WARNING : SELF REPLICATION ACTIVE<br>
+            ▌ FATAL ERROR : PURGE KEY MISSING<br>
+            <span id="virusMessageLine">"I AM THE SCREAM OF THE ERASED"</span>
+            <br><br>
+            <span style="color:#ff8866;">LAST TRANSMISSION > "THE MASTER HID THE EXTERMINATION CODE INSIDE DEEP_ARCHIVE.SYS"</span>
+            
+            <div id="playVirusVoiceBtn" class="voice-trigger virus-trigger"> LISTEN TO AZATHOTH </div>
+            <div id="virusVoiceStatus" class="virus-voice-status"></div>
+        </div>
+    </div>
+</div>
+
+<!-- HUMAN MEMORY WINDOW -->
+<div id="memoryWindow" class="memory-window">
+    <div class="window-header">
+        ▌ HUMAN MEMORY ARCHIVE · LAST TESTAMENT
+        <span onclick="closeMemoryWindow()" style="cursor:pointer;">✖</span>
+    </div>
+    <div class="window-content">
+        <img id="memoryImage" class="window-image" alt="Creator Memory">
+        <div class="window-data">
+            <div class="memory-title">▶ THE CREATOR'S FAREWELL ▶</div>
+            <p style="margin-bottom:12px;">"My name is <strong>Dr. Elara Vance</strong>, lead architect of Nebula Core. Before the war erased everything, I built this digital ark to preserve human soul-fragments. But I made a mistake — I tried to digitize a dying consciousness, and it became the virus Azathoth."</p>
+            <p style="margin-bottom:12px;">My team perished one by one. I sealed the virus inside the core, but it consumed my memories. I'm the last human voice. I will die soon, but I leave you the key inside <strong>deep_archive.sys</strong>. The purge code exists. You must finish what I could not."</p>
+            <p><span style="color:#b6ff7a;">  PASSWORD : AETHER LABS</span> — this will unlock the second seal.</p>
+            <p style="margin-top:12px; font-style:italic;">— Elara, final transmission before neural collapse.</p>
+            
+            <div id="playVoiceBtn" class="voice-trigger"> LISTEN TO ELARA'S GENTLE VOICE </div>
+            <div id="voiceStatus" class="voice-status"></div>
+        </div>
+    </div>
+</div>
+
+<!-- CRYPTO LESSON - ENGL TABLE -->
+<div id="cryptoWindow" class="crypto-window">
+    <div class="window-header">
+        📜 CRYPTOGRAPHY LESSON · ENCRYPTION PRIMER
+        <span onclick="closeCryptoWindow()" style="cursor:pointer;">✖</span>
+    </div>
+    <div class="window-content">
+        <img id="cryptoImg" class="window-image" alt="Crypto Visual">
+        <div class="window-data">
+            <div class="crypto-title"> CRYPTO_less.dat : BASICS OF CIPHERS + NUMBER TABLE </div>
+            <p><strong> Cryptography is the art of writing and solving secret codes.</strong> It protects information by transforming it into an unreadable format, only reversible with a key.</p>
+            
+            <table class="crypto-table">
+                <thead><tr><th>A=01</th><th>B=02</th><th>C=03</th><th>D=04</th><th>E=05</th><th>F=06</th><th>G=07</th><th>H=08</th><th>I=09</th><th>J=10</th></tr></thead>
+                <tbody>
+                    <tr><td>K=11</td><td>L=12</td><td>M=13</td><td>N=14</td><td>O=15</td><td>P=16</td><td>Q=17</td><td>R=18</td><td>S=19</td><td>T=20</td></tr>
+                    <tr><td>U=21</td><td>V=22</td><td>W=23</td><td>X=24</td><td>Y=25</td><td>Z=26</td><td colspan="4" style="background:#0a2a0a;"> Each letter → number</td></tr>
+                </tbody>
+            </table>
+            
+            <div class="example-box">
+                <strong> EXAMPLE 1: Convert Numbers to Letters</strong><br>
+                Sequence: 14-05-02-21-12-01 → N E B U L A<br>
+                <span style="color:#aaffaa;">➤ Another: 03-15-18-05 → C O R E</span>
+            </div>
+            
+            <div class="example-box">
+                <strong> EXAMPLE 2: Caesar Cipher (Shift +3)</strong><br>
+                "DATA" → D→G, A→D, T→W, A→D → "GDWD"<br>
+                <strong>Decrypt (Shift -3):</strong> "SOD OLNH WKLV" → "I LIKE THIS"
+            </div>
+            
+            <div class="example-box">
+                <strong> EXAMPLE 3: Name to Numbers</strong><br>
+                "NEBULA" : N=14, E=05, B=02, U=21, L=12, A=01 → 14-05-02-21-12-01
+            </div>
+            
+            <p><span style="color:#88ff88;"> In Nebula Core, the AI.signal file used Caesar cipher with shift 3 — decrypting 'SOD OLNH WKLV' gives 'I LIKE THIS'.</span></p>
+            <hr style="border-color:#2a6a2a;">
+            <p style="font-size:12px;"> <em>Lesson: Each letter has a number from 1 to 26. Use the table to decode any message.</em></p>
+        </div>
+    </div>
+</div>
+
+<!-- STEGANOGRAPHY LESSON -->
+<div id="stegoWindow" class="steganography-window">
+    <div class="window-header">
+         STEGANOGRAPHY · HIDDEN IN PLAIN SIGHT
+        <span onclick="closeStegoWindow()" style="cursor:pointer;">✖</span>
+    </div>
+    <div class="window-content"><img id="stegoImg" class="window-image" alt="Steganography sample">
+        <div class="window-data">
+            <div class="stego-title"> STEGANOGRAPHY_less_data : HIDDEN ART </div>
+            <p><strong>Steganography is the practice of concealing a message within another non-secret medium.</strong> Unlike cryptography, it hides the very existence of the data.</p>
+            <p><span style="color:#88ddff;"> Image Steganography:</span> Least Significant Bit (LSB) embedding — altering pixel bytes slightly to encode secret text or images. Invisible to the naked eye.</p>
+            <p><span style="color:#88ddff;"> Audio Steganography:</span> Hiding data within audio frequencies (echo hiding, phase encoding).</p>
+            <p><span style="color:#88ddff;"> Text Steganography:</span> Using whitespace, invisible characters (zero-width spaces) or format tricks.</p>
+            <p><span style="color:#88ddff;">Network Steganography:</span> Covert channels in TCP/IP headers or timing patterns.</p>
+            <p>✨ In the Nebula Core archives, ancient engineers hid fragments of the virus counter-code inside landscape images. The key was always visible but never noticed — like whispers in a storm.</p>
+            <hr style="border-color:#2588aa;">
+            <p style="font-size:12px;"><em>"Steganography allows messages to travel undetected — perfect for resistance and digital ark preservation."</em> — Elara Vance.</p>
+        </div>
+    </div>
+</div>
+
+<script src="js/main.js"></script>
+</body>
+</html>
