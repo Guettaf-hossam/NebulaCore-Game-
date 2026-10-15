@@ -35,4 +35,4 @@ python3 -m http.server 8000
 
 ## Credits
 
-Created by Rem and Mena.
+Created by Rym and the  Dr. Elara Vanc
