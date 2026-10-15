@@ -26,13 +26,11 @@ python3 -m http.server 8000
 ├── .gitignore
 └── README.md
 ```
+<img width="1019" height="511" alt="image" src="https://github.com/user-attachments/assets/7a7df178-bfd4-4c1d-b629-cec81defe540" />
 
-## Deploy on GitHub Pages
 
-1. Push the repo to GitHub.
-2. Settings → Pages → Source: `main` branch, `/ (root)`.
-3. Your game will be live at `https://<username>.github.io/<repo>/`.
 
 ## Credits
 
 Created by Rym and the  Dr. Elara Vanc
+https://rymrimi777-rgb.github.io/NebulaCore-Game-/
