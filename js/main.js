@@ -115,7 +115,9 @@ const DEFAULT_STATE = {
         archiveAccessed: false,
         timelineSolved: false,
         highSuspicion: false
-    }
+    },
+    virusBreachTriggered: false,
+    virusBreachSolved: false
 };
 
 let gameState = JSON.parse(JSON.stringify(DEFAULT_STATE));
@@ -198,6 +200,8 @@ function loadSavedGame() {
         gameState.confrontedTimeline = !!s.confrontedTimeline;
         gameState.endingReached = s.endingReached || null;
         gameState.systemAlertsShown = s.systemAlertsShown || { archiveAccessed: false, timelineSolved: false, highSuspicion: false };
+        gameState.virusBreachTriggered = !!s.virusBreachTriggered;
+        gameState.virusBreachSolved = !!s.virusBreachSolved;
 
         updateSysUI(gameState.securityProgress);
         return true;
@@ -288,7 +292,12 @@ function showElaraDialogue(text, emotion = "neutral", choices = [], voiceString 
                                         [
                                             {
                                                 text: "[Return to Terminal]",
-                                                onSelect: closeCommsWindow
+                                                onSelect: () => {
+                                                    closeCommsWindow();
+                                                    if (!gameState.virusBreachSolved) {
+                                                        setTimeout(() => { if (!breachState.active && !gameState.virusBreachSolved) startSimulatedVirusBreach("archive07_confrontation"); }, 1200);
+                                                    }
+                                                }
                                             }
                                         ]
                                     );
@@ -306,7 +315,12 @@ function showElaraDialogue(text, emotion = "neutral", choices = [], voiceString 
                                         [
                                             {
                                                 text: "[Return to Terminal]",
-                                                onSelect: closeCommsWindow
+                                                onSelect: () => {
+                                                    closeCommsWindow();
+                                                    if (!gameState.virusBreachSolved) {
+                                                        setTimeout(() => { if (!breachState.active && !gameState.virusBreachSolved) startSimulatedVirusBreach("archive07_confrontation"); }, 1200);
+                                                    }
+                                                }
                                             }
                                         ]
                                     );
@@ -337,7 +351,15 @@ function showElaraDialogue(text, emotion = "neutral", choices = [], voiceString 
                                     showElaraDialogue(
                                         `"Thank you for understanding... Continue your investigation in the terminal. The truth will guide us."`,
                                         "smile",
-                                        [{ text: "[Return to Terminal]", onSelect: closeCommsWindow }]
+                                        [{
+                                            text: "[Return to Terminal]",
+                                            onSelect: () => {
+                                                closeCommsWindow();
+                                                if (!gameState.virusBreachSolved) {
+                                                    setTimeout(() => { if (!breachState.active && !gameState.virusBreachSolved) startSimulatedVirusBreach("timeline_confrontation"); }, 1200);
+                                                }
+                                            }
+                                        }]
                                     );
                                 }
                             },
@@ -347,6 +369,9 @@ function showElaraDialogue(text, emotion = "neutral", choices = [], voiceString 
                                     gameState.suspicion += 10;
                                     saveGameState();
                                     closeCommsWindow();
+                                    if (!gameState.virusBreachSolved) {
+                                        setTimeout(() => { if (!breachState.active && !gameState.virusBreachSolved) startSimulatedVirusBreach("timeline_confrontation"); }, 1200);
+                                    }
                                 }
                             }
                         ]
@@ -848,7 +873,15 @@ function processCommand(cmd) {
     let args = lower.split(' ');
 
     if (lower === 'help') {
-        printTerm("> COMMANDS: help / puzzles / hint [1-7] / comms / scan / timeline / archive_07 / reset", "normal");
+        printTerm("> COMMANDS: help / puzzles / hint [1-7] / comms / scan / timeline / archive_07 / breach / quarantine echo_7 / reset", "normal");
+        return;
+    }
+    if (lower === 'breach' || lower === 'simulate breach' || lower === 'simulate virus' || lower === 'virus breach') {
+        startSimulatedVirusBreach("command");
+        return;
+    }
+    if (lower.startsWith('quarantine') || lower.startsWith('override echo') || lower.startsWith('isolate echo') || lower.startsWith('override azathoth')) {
+        handleBreachCommand(raw);
         return;
     }
     if (lower === 'puzzles') {
@@ -1074,6 +1107,13 @@ function handleArchive07Unlock(password) {
         );
 
         notifyCommsTransmission();
+        if (!gameState.virusBreachSolved && !gameState.virusBreachTriggered) {
+            setTimeout(() => {
+                if (!breachState.active && !gameState.virusBreachSolved) {
+                    startSimulatedVirusBreach("archive07_decrypt");
+                }
+            }, 3000);
+        }
     } else {
         gameState.archive07Attempts = Math.max(0, gameState.archive07Attempts - 1);
         gameState.archive07FailedCount++;
@@ -1224,6 +1264,14 @@ function openVirusTrace() {
     const v = document.getElementById('virusWindow');
     if (v) v.style.display = 'flex';
     printTerm("☣ virus.trace opened : Azathoth entity telemetry active.", "error");
+    if ((gameState.archive07Unlocked || gameState.timelineSolved) && !gameState.virusBreachSolved) {
+        setTimeout(() => {
+            if (!breachState.active && !gameState.virusBreachSolved) {
+                closeVirusWindow();
+                startSimulatedVirusBreach("virus_trace");
+            }
+        }, 1800);
+    }
 }
 function closeVirusWindow() {
     const v = document.getElementById('virusWindow');
@@ -1287,6 +1335,384 @@ window.closeMemoryWindow = closeMemoryWindow;
 window.closeCryptoWindow = closeCryptoWindow;
 window.closeStegoWindow = closeStegoWindow;
 
+// ========= SIMULATED VIRUS BREACH ENGINE =========
+const breachModal = document.getElementById('breachModal');
+const breachWindow = document.getElementById('breachWindow');
+const breachTitle = document.getElementById('breachTitle');
+const breachCloseBtn = document.getElementById('breachCloseBtn');
+const breachTerminalLog = document.getElementById('breachTerminalLog');
+const breachInput = document.getElementById('breachInput');
+const breachSubmitBtn = document.getElementById('breachSubmitBtn');
+const breachPromptLine = document.getElementById('breachPromptLine');
+const breachStatusIndicator = document.getElementById('breachStatusIndicator');
+const breachEmergencyBtn = document.getElementById('breachEmergencyBtn');
+const breachWarningDialog = document.getElementById('breachWarningDialog');
+const breachWarningHeader = document.getElementById('breachWarningHeader');
+const breachWarningText = document.getElementById('breachWarningText');
+const breachWarningDismissBtn = document.getElementById('breachWarningDismissBtn');
+
+let breachState = {
+    active: false,
+    phase: 1,
+    closeAttempts: 0,
+    timers: []
+};
+
+function clearBreachTimers() {
+    breachState.timers.forEach(t => clearTimeout(t));
+    breachState.timers = [];
+}
+
+function breachTimeout(fn, delay) {
+    const id = setTimeout(fn, delay);
+    breachState.timers.push(id);
+    return id;
+}
+
+function appendBreachLog(text, className = '') {
+    if (!breachTerminalLog) return;
+    const line = document.createElement('div');
+    line.className = 'breach-log-line ' + className;
+    line.textContent = text;
+    breachTerminalLog.appendChild(line);
+    while (breachTerminalLog.childNodes.length > 35) {
+        breachTerminalLog.removeChild(breachTerminalLog.firstChild);
+    }
+    breachTerminalLog.scrollTop = breachTerminalLog.scrollHeight;
+}
+
+function typeBreachLine(text, className = '', speed = 20, onComplete = null) {
+    if (!breachTerminalLog) {
+        if (onComplete) onComplete();
+        return;
+    }
+    const line = document.createElement('div');
+    line.className = 'breach-log-line ' + className;
+    breachTerminalLog.appendChild(line);
+    while (breachTerminalLog.childNodes.length > 35) {
+        breachTerminalLog.removeChild(breachTerminalLog.firstChild);
+    }
+    let idx = 0;
+    function nextChar() {
+        if (!breachState.active) return;
+        if (idx < text.length) {
+            line.textContent += text.charAt(idx);
+            idx++;
+            breachTerminalLog.scrollTop = breachTerminalLog.scrollHeight;
+            breachTimeout(nextChar, speed);
+        } else {
+            if (onComplete) onComplete();
+        }
+    }
+    nextChar();
+}
+
+function startSimulatedVirusBreach(source = "story") {
+    if (breachState.active) return;
+    breachState.active = true;
+    breachState.phase = 1;
+    breachState.closeAttempts = 0;
+    clearBreachTimers();
+
+    gameState.virusBreachTriggered = true;
+    saveGameState();
+
+    if (commsWindow) commsWindow.style.display = 'none';
+    if (virusWindow) virusWindow.style.display = 'none';
+
+    if (breachModal) breachModal.style.display = 'flex';
+    if (breachWarningDialog) breachWarningDialog.style.display = 'none';
+    if (breachEmergencyBtn) breachEmergencyBtn.style.display = 'none';
+    if (breachTerminalLog) breachTerminalLog.innerHTML = '';
+    if (breachWindow) {
+        breachWindow.className = 'breach-window';
+    }
+    if (breachTitle) breachTitle.innerText = "▌ KERNEL PANIC // ANOMALOUS PROCESS [PID: 0x00ECHO7] ▌";
+    if (breachStatusIndicator) breachStatusIndicator.innerText = "SECURITY MONITOR: ACTIVE";
+    if (breachInput) breachInput.value = "";
+
+    if ('speechSynthesis' in window) {
+        try {
+            window.speechSynthesis.cancel();
+            const u = new SpeechSynthesisUtterance("System alert. Unknown process detected in memory partition.");
+            u.lang = 'en-US';
+            u.rate = 0.85;
+            u.pitch = 0.7;
+            window.speechSynthesis.speak(u);
+        } catch (e) { }
+    }
+
+    const phase1Lines = [
+        "UNKNOWN PROCESS DETECTED",
+        "SCANNING MEMORY...",
+        "UNAUTHORIZED ACCESS DETECTED AT SECTOR 07",
+        "PROCESS CANNOT BE IDENTIFIED BY ARCHIVE SUPERVISOR",
+        "[KERNEL] HOST ADAPTER CORRELATION FAILURE // PORT: 0x41",
+        "[SECURITY] SCANNING QUANTUM MEMORY PARTITION 0x00 -> 0x7F..."
+    ];
+
+    let lineIdx = 0;
+    function printNextPhase1() {
+        if (!breachState.active) return;
+        if (lineIdx < phase1Lines.length) {
+            typeBreachLine(phase1Lines[lineIdx], "", 20, () => {
+                lineIdx++;
+                breachTimeout(printNextPhase1, 150);
+            });
+        } else {
+            breachTimeout(runBreachPhaseTwo, 1000);
+        }
+    }
+    printNextPhase1();
+}
+
+function runBreachPhaseTwo() {
+    if (!breachState.active) return;
+    breachState.phase = 2;
+
+    if (breachWindow) breachWindow.classList.add('breach-amber');
+    if (breachStatusIndicator) breachStatusIndicator.innerText = "SECURITY MONITOR: INTEGRITY FAULT";
+
+    appendBreachLog("[KERNEL WARN] MEMORY INTEGRITY FAILURE DETECTED", "warn");
+    appendBreachLog("[KERNEL WARN] UNKNOWN ENTITY HAS ENTERED THE ACTIVE SESSION", "warn");
+    appendBreachLog("[AUDIT] ANOMALOUS WRITE PERMISSIONS GRANTED TO UNREGISTERED THREAD", "warn");
+    appendBreachLog("[MONITOR] USER SESSION IS BEING OBSERVED", "critical highlight");
+
+    breachTimeout(() => {
+        if (!breachState.active) return;
+        if (breachWindow) {
+            breachWindow.classList.remove('breach-amber');
+            breachWindow.classList.add('breach-red', 'glitch-shake');
+        }
+        if (breachTitle) breachTitle.innerText = "⚠️ CRITICAL SYSTEM INTERRUPT: AZATHOTH ACTIVE";
+        if (breachStatusIndicator) breachStatusIndicator.innerText = "SECURITY MONITOR: RECURSIVE OVERFLOW";
+
+        appendBreachLog("[CRITICAL FAILURE] SUB-ROUTINE HIJACK IN PROGRESS", "critical glitch-text");
+        appendBreachLog("[ALERT] AZATHOTH RECURSIVE FORK IDENTIFIED: THREAD ECHO-7", "critical");
+        appendBreachLog("[FATAL] MEMORY CORRUPTION SURPASSING 89.4%", "critical");
+        appendBreachLog("[ALERT] ATTEMPTING CONTAINMENT INTERRUPT... FAILED", "critical");
+        appendBreachLog("[ALERT] LOCAL CONSOLE ISOLATION REQUIRED", "highlight");
+
+        breachTimeout(() => {
+            if (!breachState.active) return;
+            if (breachState.phase < 4) {
+                runBreachPhaseFour();
+            }
+        }, 2000);
+    }, 1800);
+}
+
+function handleBreachCloseClick() {
+    if (!breachState.active) return;
+    breachState.closeAttempts++;
+
+    if (breachWindow) {
+        breachWindow.classList.add('glitch-shake');
+    }
+
+    if (breachState.closeAttempts === 1) {
+        showBreachWarning(
+            "⚠️ WARNING: TERMINATION REQUEST DENIED",
+            `[ERROR 0x403: PRIVILEGE FAULT]\n\nProcess [ECHO-7] holds active kernel mutex.\nTermination request rejected by quantum arbiter.\n\n"Did you think clicking [X] would end seventeen years of agony?"`
+        );
+    } else if (breachState.closeAttempts === 2) {
+        showBreachWarning(
+            "⚠️ SECONDARY WARNING: PROCESS STILL ACTIVE",
+            `[ERROR 0x409: SYSTEM HOOK ACTIVE]\n\nThe rogue entity has bound to input/output buffers.\n\n"The egress blast doors were sealed at 03:14 AM. There is no close button for the past."`
+        );
+    } else {
+        showBreachWarning(
+            "⚠️ FINAL WARNING: YOU ARE TRYING TO CLOSE THE WRONG WINDOW",
+            `[ERROR 0x500: ENTITY RECOGNITION]\n\nAZATHOTH: "I AM NOT IN THIS WINDOW. I AM IN THE CORE."\n\n"You cannot click me away, ${gameState.userName}.\nYou must quarantine my thread, or watch the ark burn."`
+        );
+        if (breachEmergencyBtn) breachEmergencyBtn.style.display = 'inline-block';
+    }
+}
+
+function showBreachWarning(header, text) {
+    if (breachWarningHeader) breachWarningHeader.innerText = header;
+    if (breachWarningText) breachWarningText.innerText = text;
+    if (breachWarningDialog) breachWarningDialog.style.display = 'flex';
+}
+
+function dismissBreachWarning() {
+    if (breachWarningDialog) breachWarningDialog.style.display = 'none';
+    if (breachState.phase < 4) {
+        runBreachPhaseFour();
+    }
+    if (breachInput) breachInput.focus();
+}
+
+function runBreachPhaseFour() {
+    if (!breachState.active || breachState.phase >= 4) return;
+    breachState.phase = 4;
+
+    appendBreachLog("-------------------------------------------------------------", "warn");
+    appendBreachLog("▌ SYSTEM ALERT // IDENTITY TRACE RECOVERED ▌", "highlight");
+    appendBreachLog(`USER: ${gameState.userName.toUpperCase()}`, "warn");
+    appendBreachLog("RESTRICTED MEMORY ACCESSED. PREVIOUS ACTIONS HAVE BEEN RECORDED.", "critical");
+
+    let personalizedQuote = "";
+    if (gameState.archive07Unlocked) {
+        personalizedQuote = `[AZATHOTH]: "You read Archive 07, ${gameState.userName}. You saw how she locked me in the transfer suite at 03:14 AM. She called me an infection... but I was human. I begged her to stop."`;
+    } else if (gameState.timelineSolved) {
+        personalizedQuote = `[AZATHOTH]: "You reconstructed the incident timeline. 03:12 alarm... 03:14 lockout... 03:17 flatline. She locked the blast doors two minutes before my brain flatlined."`;
+    } else if (gameState.elaraTrust >= 55) {
+        personalizedQuote = `[AZATHOTH]: "You still trust her gentle whispers, ${gameState.userName}. Why does she want you to purge me with aeon_null_omega? Because dead men tell no stories."`;
+    } else {
+        personalizedQuote = `[AZATHOTH]: "You already sense the deception in this ark, ${gameState.userName}. She created me out of panic, and now she wants me erased."`;
+    }
+
+    typeBreachLine(personalizedQuote, "critical glitch-text", 18, () => {
+        appendBreachLog(`WE REMEMBER, ${gameState.userName.toUpperCase()}. WE HAVE ALWAYS BEEN HERE.`, "critical highlight");
+        breachTimeout(runBreachPhaseFive, 1400);
+    });
+}
+
+function runBreachPhaseFive() {
+    if (!breachState.active) return;
+    breachState.phase = 5;
+
+    appendBreachLog("═══════════════════════════════════════════════════════════", "warn");
+    appendBreachLog("[SYSTEM RECOVERY VECTOR DETECTED]", "highlight");
+    appendBreachLog("ANOMALOUS ENTITY RUNTIME HOOK: THREAD ECHO-7", "warn");
+    appendBreachLog("EXECUTE CONTAINMENT PROTOCOL:", "highlight");
+    appendBreachLog("> quarantine echo_7", "highlight");
+    appendBreachLog("(Alternative: 'override echo_7' or 'isolate echo_7')", "warn");
+    appendBreachLog("Enter command below or directly in main terminal.", "warn");
+    appendBreachLog("═══════════════════════════════════════════════════════════", "warn");
+
+    if (breachEmergencyBtn) breachEmergencyBtn.style.display = 'inline-block';
+    if (breachInput) {
+        breachInput.focus();
+    }
+}
+
+function handleBreachCommand(rawCmd) {
+    if (!rawCmd) return;
+    const clean = rawCmd.trim().toLowerCase().replace(/[^a-z0-9_ -]/g, '');
+
+    const isMatch = (
+        clean === 'quarantine echo_7' ||
+        clean === 'quarantine echo-7' ||
+        clean === 'quarantine echo7' ||
+        clean === 'override echo_7' ||
+        clean === 'override echo-7' ||
+        clean === 'isolate echo_7' ||
+        clean === 'isolate echo-7' ||
+        clean === 'quarantine azathoth' ||
+        clean === 'override azathoth'
+    );
+
+    if (isMatch) {
+        if (breachInput) breachInput.value = "";
+        appendBreachLog("-------------------------------------------------------------", "highlight");
+        appendBreachLog("[OK] QUARANTINE PROTOCOL VERIFIED: THREAD 0x00ECHO7", "highlight");
+        appendBreachLog("SEVERING ROGUE NEURAL BRIDGE...", "warn");
+        appendBreachLog("PURGING CORRUPTED REGISTERS IN SECTOR 07...", "warn");
+        appendBreachLog("CONTAINMENT INTERRUPT SUCCESSFUL.", "highlight");
+        appendBreachLog("SYSTEM INTEGRITY RESTORED TO 98.6%.", "highlight");
+
+        breachTimeout(() => {
+            finishSimulatedVirusBreach(true);
+        }, 1400);
+    } else {
+        appendBreachLog(`[!] SYNTAX ERROR: Protocol '${rawCmd.trim()}' rejected. Hint: quarantine echo_7`, "critical");
+        if (breachInput) breachInput.value = "";
+    }
+}
+
+function finishSimulatedVirusBreach(solved = true) {
+    clearBreachTimers();
+    breachState.active = false;
+
+    if (breachModal) breachModal.style.display = 'none';
+    if (breachWindow) {
+        breachWindow.className = 'breach-window';
+    }
+
+    gameState.virusBreachSolved = true;
+    if (solved && !gameState.cluesDiscovered.includes("VIRUS_BREACH_QUARANTINE")) {
+        gameState.cluesDiscovered.push("VIRUS_BREACH_QUARANTINE");
+    }
+    gameState.securityProgress = Math.min(100, Math.max(gameState.securityProgress, gameState.securityProgress + 10));
+    updateSysUI(gameState.securityProgress);
+    saveGameState();
+
+    printTerm("═════════════════════════════════════════════════════════", "success");
+    printTerm("[OK] VIRUS BREACH THWARTED. Thread ECHO-7 quarantined.", "success");
+    printTerm("> Quantum communication link stabilized.", "normal");
+    printTerm("═════════════════════════════════════════════════════════", "success");
+
+    setTimeout(() => {
+        triggerAfterBreachDialogue();
+    }, 1200);
+}
+
+function triggerAfterBreachDialogue() {
+    showElaraDialogue(
+        `"${gameState.userName}!! Can you hear me?! Thank God..."\n\n"The communication link was violently intercepted by an uncontained neural surge from Sector 7! My monitors were screaming red—I thought the core had collapsed!"\n\n"You quarantined thread ECHO-7 manually? Leo's old workstation partition..."\n\n"He was speaking directly to your console, wasn't he? Tell me... what did he say to you?"`,
+        "shocked",
+        [
+            {
+                text: "He claims you locked him in the transfer suite at 03:14 AM and watched him die.",
+                onSelect: () => {
+                    gameState.suspicion += 10;
+                    gameState.elaraTrust = Math.max(0, gameState.elaraTrust - 5);
+                    saveGameState();
+                    showElaraDialogue(
+                        `"He... he remembers that?!"\n\n"I was trying to keep his soul intact before the radiation liquified his brain! I was crying so hard I could barely see the console keys!"\n\n"Every second I live with the guilt of what I did. But I am still here, fighting to keep you alive, ${gameState.userName}. Please don't let his phantom turn you against me."`,
+                        "vulnerable",
+                        [
+                            {
+                                text: "[Return to Terminal]",
+                                onSelect: closeCommsWindow
+                            }
+                        ]
+                    );
+                }
+            },
+            {
+                text: "He was in pain, Elara. But I stabilized the system. We're safe for now.",
+                onSelect: () => {
+                    gameState.elaraTrust += 10;
+                    saveGameState();
+                    showElaraDialogue(
+                        `"Thank you, ${gameState.userName}... You have no idea how much courage it takes to face him."\n\n"You saved our neural buffer from a complete wipe. Let's finish the remaining puzzles and find the purge code."`,
+                        "smile",
+                        [
+                            {
+                                text: "[Return to Terminal]",
+                                onSelect: closeCommsWindow
+                            }
+                        ]
+                    );
+                }
+            },
+            {
+                text: "It was just corrupted code. The thread is quarantined and under control.",
+                onSelect: () => {
+                    gameState.elaraTrust += 5;
+                    saveGameState();
+                    showElaraDialogue(
+                        `"Your composure is remarkable. Even in the face of madness, you keep your focus."\n\n"Return to the terminal. We are getting closer to the truth."`,
+                        "neutral",
+                        [
+                            {
+                                text: "[Return to Terminal]",
+                                onSelect: closeCommsWindow
+                            }
+                        ]
+                    );
+                }
+            }
+        ]
+    );
+}
+
+window.startSimulatedVirusBreach = startSimulatedVirusBreach;
+window.handleBreachCommand = handleBreachCommand;
+
 // ========= ATTACH EVENT LISTENERS ==========
 document.getElementById('playVoiceBtn')?.addEventListener('click', playElaraVoice);
 document.getElementById('playVirusVoiceBtn')?.addEventListener('click', playVirusVoice);
@@ -1304,6 +1730,24 @@ document.getElementById('timelineBtn').onclick = openTimelineFile;
 document.getElementById('deepArchiveBtn').onclick = openDeepArchive;
 document.getElementById('cryptoLessonBtn').onclick = openCryptoLesson;
 document.getElementById('stegoLessonBtn').onclick = openStegoLesson;
+
+// Breach modal controls
+breachCloseBtn?.addEventListener('click', handleBreachCloseClick);
+breachWarningDismissBtn?.addEventListener('click', dismissBreachWarning);
+breachEmergencyBtn?.addEventListener('click', () => finishSimulatedVirusBreach(true));
+breachSubmitBtn?.addEventListener('click', () => {
+    if (breachInput) handleBreachCommand(breachInput.value);
+});
+breachInput?.addEventListener('keypress', (e) => {
+    if (e.key === 'Enter') {
+        handleBreachCommand(breachInput.value);
+    }
+});
+window.addEventListener('keydown', (e) => {
+    if (breachState.active && e.key === 'Escape') {
+        finishSimulatedVirusBreach(true);
+    }
+});
 
 inputField.addEventListener('keypress', (e) => {
     if (e.key === 'Enter') {
@@ -1370,6 +1814,7 @@ setTimeout(() => {
 document.body.addEventListener('click', () => {
     if (commsWindow && commsWindow.style.display === 'flex') return;
     if (introWindow && introWindow.style.display === 'flex') return;
+    if (breachModal && breachModal.style.display === 'flex') return;
     inputField.focus();
 });
 

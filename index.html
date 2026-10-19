@@ -109,6 +109,37 @@
     </div>
 </div>
 
+<!-- SIMULATED VIRUS BREACH MODAL -->
+<div id="breachModal" class="breach-overlay" style="display:none;" role="dialog" aria-modal="true" aria-label="Simulated Virus Breach Event">
+    <div class="breach-window" id="breachWindow">
+        <div class="breach-crt-scanlines"></div>
+        <div class="breach-header" id="breachHeader">
+            <span class="breach-title" id="breachTitle">▌ KERNEL PANIC // ANOMALOUS PROCESS [PID: 0x00ECHO7] ▌</span>
+            <button type="button" class="breach-close-btn" id="breachCloseBtn" title="Terminate Process" aria-label="Close">[X]</button>
+        </div>
+        <div class="breach-body" id="breachBody">
+            <div class="breach-terminal-log" id="breachTerminalLog" aria-live="polite"></div>
+            <div class="breach-prompt-line" id="breachPromptLine">
+                <span class="breach-prompt-prefix">&gt; SYSTEM OVERRIDE:</span>
+                <input type="text" id="breachInput" class="breach-input" placeholder="Type: quarantine echo_7" autocomplete="off" spellcheck="false">
+                <button type="button" id="breachSubmitBtn" class="breach-submit-btn">EXECUTE</button>
+            </div>
+            <div class="breach-footer">
+                <span id="breachStatusIndicator" class="breach-status-badge">SECURITY MONITOR: ACTIVE</span>
+                <button type="button" id="breachEmergencyBtn" class="breach-emergency-btn" style="display:none;">[EMERGENCY BYPASS (ESC)]</button>
+            </div>
+        </div>
+        <!-- In-game false exit warning dialog overlay inside breach window -->
+        <div id="breachWarningDialog" class="breach-warning-dialog" style="display:none;">
+            <div class="breach-warning-header" id="breachWarningHeader">⚠️ TERMINATION REQUEST DENIED</div>
+            <div class="breach-warning-content" id="breachWarningText"></div>
+            <div class="breach-warning-actions">
+                <button type="button" id="breachWarningDismissBtn" class="breach-warning-btn">ACKNOWLEDGE</button>
+            </div>
+        </div>
+    </div>
+</div>
+
 <!-- VIRUS WINDOW -->
 <div id="virusWindow" class="virus-window">
     <div class="window-header">

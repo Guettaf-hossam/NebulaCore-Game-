@@ -200,11 +200,11 @@ body::before {
     cursor: pointer;
     position: relative;
     z-index: 10;
-    box-shadow: 0 0 20px rgba(0, 0, 0, 0.8), 0 0 5px #b6ff7a80;
+    box-shadow: 0 4px 20px rgba(0, 0, 0, 0.85);
     transition: 0.2s;
 }
 #files:hover {
-    box-shadow: 0 0 25px #b6ff7a40;
+    box-shadow: 0 6px 24px rgba(0, 0, 0, 0.9);
     border-color: #d4ff9e;
 }
 .file {
@@ -245,6 +245,7 @@ body::before {
     border-radius: 8px;
     width: 760px;
     max-width: 90vw;
+    box-shadow: 0 10px 30px rgba(0, 0, 0, 0.95);
 }
 .memory-window, .crypto-window, .steganography-window {
     border: 2px solid #b6ff7a;
@@ -436,7 +437,7 @@ body::before {
     background: #123815;
     border-color: #b6ff7a;
     color: #ffffff;
-    box-shadow: 0 0 8px rgba(182, 255, 122, 0.4);
+    box-shadow: none;
     transform: translateX(4px);
 }
 .dialogue-choice-num {
@@ -475,5 +476,341 @@ body::before {
     font-family: 'VT323', monospace;
     font-size: 19px;
     line-height: 24px;
+}
+
+/* ==========================================================================
+   SIMULATED VIRUS BREACH EVENT (RETRO CRT VINTAGE TERMINAL SIMULATION)
+   ========================================================================== */
+.breach-overlay {
+    position: fixed;
+    inset: 0;
+    z-index: 5000;
+    background: rgba(2, 6, 2, 0.88);
+    backdrop-filter: blur(8px);
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    padding: 16px;
+    font-family: 'VT323', monospace;
+}
+
+.breach-window {
+    width: 780px;
+    max-width: 95vw;
+    background: #020603;
+    border: 2px solid #33ff66;
+    box-shadow: 0 10px 30px rgba(0, 0, 0, 0.95);
+    position: relative;
+    overflow: hidden;
+    display: flex;
+    flex-direction: column;
+    border-radius: 4px;
+    transition: border-color 0.4s ease, color 0.4s ease;
+}
+
+/* CRT Scanlines Overlay */
+.breach-crt-scanlines {
+    pointer-events: none;
+    position: absolute;
+    inset: 0;
+    background: linear-gradient(rgba(18, 16, 16, 0) 50%, rgba(0, 0, 0, 0.45) 50%),
+                linear-gradient(90deg, rgba(255, 0, 0, 0.03), rgba(0, 255, 0, 0.01), rgba(0, 0, 255, 0.03));
+    background-size: 100% 3px, 6px 100%;
+    z-index: 10;
+    opacity: 0.85;
+}
+
+/* Phase Transitions: Amber & Red */
+.breach-window.breach-amber {
+    border-color: #ffaa33;
+    box-shadow: 0 10px 30px rgba(0, 0, 0, 0.95);
+}
+.breach-window.breach-amber .breach-header {
+    background: #ffaa33;
+    color: #050200;
+}
+.breach-window.breach-amber .breach-close-btn {
+    border-color: #050200;
+    color: #050200;
+}
+.breach-window.breach-amber .breach-terminal-log {
+    color: #ffcc66;
+}
+.breach-window.breach-amber .breach-prompt-prefix {
+    color: #ffaa33;
+}
+.breach-window.breach-amber .breach-input {
+    border-color: #ffaa33;
+    color: #ffcc66;
+}
+.breach-window.breach-amber .breach-submit-btn {
+    border-color: #ffaa33;
+    color: #ffaa33;
+    background: #261400;
+}
+
+.breach-window.breach-red {
+    border-color: #ff2a44;
+    box-shadow: 0 10px 30px rgba(0, 0, 0, 0.95);
+}
+.breach-window.breach-red .breach-header {
+    background: #ff2a44;
+    color: #ffffff;
+}
+.breach-window.breach-red .breach-close-btn {
+    border-color: #ffffff;
+    color: #ffffff;
+}
+.breach-window.breach-red .breach-terminal-log {
+    color: #ff6677;
+}
+.breach-window.breach-red .breach-prompt-prefix {
+    color: #ff4466;
+}
+.breach-window.breach-red .breach-input {
+    border-color: #ff2a44;
+    color: #ff8899;
+    box-shadow: none;
+}
+.breach-window.breach-red .breach-submit-btn {
+    border-color: #ff2a44;
+    color: #ffffff;
+    background: #3d050c;
+}
+
+/* Breach Header */
+.breach-header {
+    background: #33ff66;
+    color: #020603;
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    padding: 10px 16px;
+    font-family: 'Orbitron', monospace;
+    font-size: 13px;
+    font-weight: bold;
+    letter-spacing: 1px;
+    transition: background 0.4s ease, color 0.4s ease;
+}
+
+.breach-close-btn {
+    background: transparent;
+    border: 1px solid #020603;
+    color: #020603;
+    font-family: 'VT323', monospace;
+    font-size: 18px;
+    font-weight: bold;
+    padding: 2px 8px;
+    cursor: pointer;
+    line-height: 1;
+    transition: all 0.2s ease;
+}
+.breach-close-btn:hover {
+    background: rgba(0, 0, 0, 0.25);
+    transform: scale(1.08);
+}
+
+/* Breach Body */
+.breach-body {
+    padding: 18px 20px;
+    display: flex;
+    flex-direction: column;
+    gap: 12px;
+    position: relative;
+    z-index: 1;
+}
+
+.breach-terminal-log {
+    height: 310px;
+    overflow-y: auto;
+    background: rgba(0, 0, 0, 0.85);
+    border: 1px solid rgba(51, 255, 102, 0.3);
+    padding: 14px;
+    color: #b6ff7a;
+    font-size: 21px;
+    line-height: 27px;
+    letter-spacing: 0.5px;
+    white-space: pre-wrap;
+    word-break: break-word;
+    box-shadow: inset 0 0 15px rgba(0, 0, 0, 0.9);
+}
+.breach-terminal-log::-webkit-scrollbar {
+    width: 6px;
+}
+.breach-terminal-log::-webkit-scrollbar-track {
+    background: #020603;
+}
+.breach-terminal-log::-webkit-scrollbar-thumb {
+    background: currentColor;
+}
+
+.breach-log-line {
+    margin-bottom: 5px;
+}
+.breach-log-line.critical {
+    color: #ff3355;
+    font-weight: bold;
+}
+.breach-log-line.warn {
+    color: #ffbb44;
+}
+.breach-log-line.highlight {
+    color: #ffffff;
+}
+.breach-log-line.glitch-text {
+    animation: textJitter 0.12s infinite;
+}
+
+/* Prompt Line */
+.breach-prompt-line {
+    display: flex;
+    gap: 10px;
+    align-items: center;
+}
+.breach-prompt-prefix {
+    font-size: 22px;
+    color: #b6ff7a;
+    white-space: nowrap;
+}
+.breach-input {
+    flex: 1;
+    background: #020603;
+    border: 1px solid #33ff66;
+    color: #b6ff7a;
+    font-family: 'VT323', monospace;
+    font-size: 22px;
+    padding: 6px 12px;
+    outline: none;
+    transition: all 0.3s ease;
+}
+.breach-submit-btn {
+    background: #06240e;
+    border: 1px solid #33ff66;
+    color: #b6ff7a;
+    font-family: 'Orbitron', monospace;
+    font-size: 12px;
+    padding: 8px 16px;
+    cursor: pointer;
+    transition: all 0.2s ease;
+}
+.breach-submit-btn:hover {
+    background: #104e1f;
+    box-shadow: none;
+    color: #ffffff;
+}
+
+.breach-footer {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    font-size: 13px;
+    font-family: 'Orbitron', monospace;
+    letter-spacing: 1px;
+}
+.breach-status-badge {
+    color: #88ffaa;
+    font-size: 11px;
+}
+.breach-emergency-btn {
+    background: #2a0508;
+    border: 1px solid #ff4466;
+    color: #ff88aa;
+    font-family: 'Orbitron', monospace;
+    font-size: 11px;
+    padding: 6px 12px;
+    cursor: pointer;
+    transition: all 0.2s ease;
+}
+.breach-emergency-btn:hover {
+    background: #5a0912;
+    color: #ffffff;
+    box-shadow: none;
+}
+
+/* False Exit Warning Dialog Overlay */
+.breach-warning-dialog {
+    position: absolute;
+    inset: 35px 25px;
+    z-index: 20;
+    background: rgba(10, 2, 4, 0.98);
+    border: 2px solid #ff2a44;
+    box-shadow: 0 10px 30px rgba(0, 0, 0, 0.95);
+    display: flex;
+    flex-direction: column;
+    justify-content: space-between;
+    padding: 24px;
+    animation: breachWarningPop 0.25s ease-out;
+}
+.breach-warning-header {
+    font-family: 'Orbitron', monospace;
+    font-size: 16px;
+    color: #ff2a44;
+    letter-spacing: 1.5px;
+    font-weight: bold;
+    border-bottom: 1px solid rgba(255, 42, 68, 0.4);
+    padding-bottom: 8px;
+}
+.breach-warning-content {
+    font-size: 24px;
+    line-height: 32px;
+    color: #ffdddd;
+    margin: 18px 0;
+    white-space: pre-line;
+}
+.breach-warning-actions {
+    display: flex;
+    justify-content: flex-end;
+}
+.breach-warning-btn {
+    background: #36070e;
+    border: 1px solid #ff2a44;
+    color: #ff99aa;
+    font-family: 'Orbitron', monospace;
+    font-size: 13px;
+    padding: 10px 24px;
+    cursor: pointer;
+    transition: all 0.2s ease;
+}
+.breach-warning-btn:hover {
+    background: #6a0b19;
+    color: #ffffff;
+    box-shadow: none;
+}
+
+/* Glitch Animations */
+.glitch-shake {
+    animation: breachShake 0.1s infinite;
+}
+@keyframes breachShake {
+    0% { transform: translate(0, 0); }
+    20% { transform: translate(-3px, 2px); }
+    40% { transform: translate(3px, -2px); }
+    60% { transform: translate(-2px, -1px); }
+    80% { transform: translate(2px, 2px); }
+    100% { transform: translate(-1px, -2px); }
+}
+@keyframes textJitter {
+    0% { transform: translateX(0); opacity: 1; }
+    50% { transform: translateX(2px); opacity: 0.85; filter: hue-rotate(90deg); }
+    100% { transform: translateX(-1px); opacity: 1; }
+}
+@keyframes breachWarningPop {
+    from { opacity: 0; transform: scale(0.95); }
+    to { opacity: 1; transform: scale(1); }
+}
+
+@media (prefers-reduced-motion: reduce) {
+    .glitch-shake {
+        animation: none !important;
+    }
+    .breach-log-line.glitch-text {
+        animation: none !important;
+    }
+    .breach-crt-scanlines {
+        opacity: 0.1 !important;
+    }
+    .breach-emergency-btn {
+        animation: none !important;
+    }
 }
 
