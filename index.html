@@ -39,15 +39,72 @@
         </div>
         <div id="planetBox"><canvas id="globe"></canvas></div>
         <div id="files">
-            ✉<span style="color:#d4ff9e;">SYSTEM_FILES</span><br><br>
+            <span style="color:#d4ff9e; font-weight:bold;">[SYSTEM_FILES]</span><br><br>
+            <div class="file" id="commsBtn" style="color:#d4ff9e; font-weight:bold;">▶ COMMS · Dr. Elara Vance</div>
             <div class="file" id="corelogBtn">▶ CORE.log</div>
             <div class="file" id="aiSignalBtn">▶ AI.signal </div>
-            <div class="file" id="virusBtn"> ☠︎virus.trace</div>
+            <div class="file" id="virusBtn"> [!] virus.trace</div>
             <div class="file" id="humanMemoryBtn">▶ human_memory.dat</div>
             <div class="file" id="finalMsgBtn">▶ final_message.log </div>
+            <div class="file" id="archive07Btn" style="color:#ffcc66;">▶ [RESTRICTED] archive_07.dat</div>
+            <div class="file" id="timelineBtn" style="color:#88ddff;">▶ [TIMELINE] incident_timeline.dat</div>
             <div class="file" id="deepArchiveBtn">▶ deep_archive.sys </div>
-            <div class="file" id="cryptoLessonBtn"> crypto_less.dat</div>
-            <div class="file" id="stegoLessonBtn"> steganography_less_data</div>
+            <div class="file" id="cryptoLessonBtn"> [FILE] crypto_less.dat</div>
+            <div class="file" id="stegoLessonBtn"> [FILE] steganography_less_data</div>
+        </div>
+    </div>
+</div>
+
+<!-- IDENTITY VERIFICATION INTRO WINDOW -->
+<div id="introWindow" class="memory-window" style="display:none; width:540px; z-index:3000;">
+    <div class="window-header">
+        ▌ NEBULA CORE · IDENTITY VERIFICATION ▌
+    </div>
+    <div class="window-content" style="flex-direction:column; padding:24px; gap:14px;">
+        <div style="font-family:'Orbitron', monospace; font-size:13px; color:#b6ff7a; letter-spacing:1.5px;">
+            // NEBULA CORE // 2084 //
+        </div>
+        <p style="font-family:'VT323', monospace; font-size:24px; color:#ffffff; line-height:30px;">
+            "Before we proceed, identify yourself."
+        </p>
+        <div style="display:flex; gap:10px; align-items:center; margin-top:6px;">
+            <span style="font-family:'VT323'; font-size:22px; color:#b6ff7a;">&gt; Enter your name:</span>
+            <input id="introNameInput" style="background:#020904; border:1px solid #b6ff7a; color:#b6ff7a; font-family:'VT323'; font-size:22px; padding:6px 12px; outline:none; flex:1;" maxlength="20" placeholder="Operator" autofocus>
+        </div>
+        <div id="introConfirmBtn" class="voice-trigger" style="margin-top:14px; text-align:center;">CONFIRM IDENTITY</div>
+    </div>
+</div>
+
+<!-- DR. ELARA VANCE COMMS WINDOW -->
+<div id="commsWindow" class="memory-window" style="display:none;">
+    <div class="window-header">
+        ▌ QUANTUM TRANSMISSION · DR. ELARA VANCE ▌
+        <span onclick="closeCommsWindow()" style="cursor:pointer;" title="Return to Terminal">[X]</span>
+    </div>
+    <div class="window-content">
+        <div style="display:flex; flex-direction:column; align-items:center; gap:6px;">
+            <img id="elaraPortrait" class="window-image" src="elara_neutral.png-removebg-preview/elara_neutral.png-removebg-preview.png" alt="Dr. Elara Vance" style="width:220px; height:230px; object-position:top center; background: radial-gradient(circle, #08240a 0%, #000000 85%);">
+            <div id="elaraStateBadge" style="font-size:11px; color:#aaffaa; font-family:'Orbitron'; letter-spacing:1px;">STATE: CONCERNED</div>
+        </div>
+        <div class="window-data" style="display:flex; flex-direction:column; justify-content:space-between; padding:12px 16px;">
+            <div>
+                <div class="memory-title" style="font-size:20px;">▶ DR. ELARA VANCE</div>
+                <div style="font-size:12px; color:#7cff7a; margin-bottom:12px;">LEAD ARCHITECT · NEBULA CORE (2084)</div>
+                <div id="elaraDialogueText" style="min-height:90px; font-size:19px; line-height:26px; color:#f0fff0; white-space:pre-line;">
+                </div>
+            </div>
+
+            <div>
+                <div id="elaraChoicesContainer" style="display:flex; flex-direction:column; gap:6px; margin-top:10px; border-top:1px dashed #2a6a2a; padding-top:10px;">
+                    <!-- Choices populated here -->
+                </div>
+                
+                <div style="display:flex; gap:10px; margin-top:14px;">
+                    <div id="playCommsVoiceBtn" class="voice-trigger" style="flex:1; margin-top:0;">LISTEN TO TRANSMISSION</div>
+                    <div id="returnToTermBtn" class="voice-trigger" style="flex:1; margin-top:0; border-color:#88ddff; color:#88ddff; background:#001a22;">[RETURN TO TERMINAL]</div>
+                </div>
+                <div id="commsVoiceStatus" class="voice-status"></div>
+            </div>
         </div>
     </div>
 </div>
@@ -56,12 +113,12 @@
 <div id="virusWindow" class="virus-window">
     <div class="window-header">
         ▌ KARMIC ENGINE · INFECTED ENTITY ▌
-        <span onclick="closeVirusWindow()" style="cursor:pointer;">✖</span>
+        <span onclick="closeVirusWindow()" style="cursor:pointer;">[X]</span>
     </div>
     <div class="window-content">
         <img id="virusImage" class="window-image" alt="ENTITY">
         <div class="window-data">
-            <div class="virus-title">☠ CORE VIRUS : AZATHOTH ☠</div>
+            <div class="virus-title">[!] CORE VIRUS : AZATHOTH [!]</div>
             ▶ ENTITY ID : ECHO-7<br>
             ▶ ORIGIN : FRAGMENTED HUMAN ANGUISH<br>
             ▶ CORRUPTION RATE : 97% <br>
@@ -85,7 +142,7 @@
 <div id="memoryWindow" class="memory-window">
     <div class="window-header">
         ▌ HUMAN MEMORY ARCHIVE · LAST TESTAMENT
-        <span onclick="closeMemoryWindow()" style="cursor:pointer;">✖</span>
+        <span onclick="closeMemoryWindow()" style="cursor:pointer;">[X]</span>
     </div>
     <div class="window-content">
         <img id="memoryImage" class="window-image" alt="Creator Memory">
@@ -105,8 +162,8 @@
 <!-- CRYPTO LESSON - ENGL TABLE -->
 <div id="cryptoWindow" class="crypto-window">
     <div class="window-header">
-        📜 CRYPTOGRAPHY LESSON · ENCRYPTION PRIMER
-        <span onclick="closeCryptoWindow()" style="cursor:pointer;">✖</span>
+        [CIPHER] CRYPTOGRAPHY LESSON · ENCRYPTION PRIMER
+        <span onclick="closeCryptoWindow()" style="cursor:pointer;">[X]</span>
     </div>
     <div class="window-content">
         <img id="cryptoImg" class="window-image" alt="Crypto Visual">
@@ -125,7 +182,7 @@
             <div class="example-box">
                 <strong> EXAMPLE 1: Convert Numbers to Letters</strong><br>
                 Sequence: 14-05-02-21-12-01 → N E B U L A<br>
-                <span style="color:#aaffaa;">➤ Another: 03-15-18-05 → C O R E</span>
+                <span style="color:#aaffaa;">&gt; Another: 03-15-18-05 → C O R E</span>
             </div>
             
             <div class="example-box">
@@ -149,8 +206,8 @@
 <!-- STEGANOGRAPHY LESSON -->
 <div id="stegoWindow" class="steganography-window">
     <div class="window-header">
-         STEGANOGRAPHY · HIDDEN IN PLAIN SIGHT
-        <span onclick="closeStegoWindow()" style="cursor:pointer;">✖</span>
+        [STEGANOGRAPHY] HIDDEN IN PLAIN SIGHT
+        <span onclick="closeStegoWindow()" style="cursor:pointer;">[X]</span>
     </div>
     <div class="window-content"><img id="stegoImg" class="window-image" alt="Steganography sample">
         <div class="window-data">
@@ -160,7 +217,7 @@
             <p><span style="color:#88ddff;"> Audio Steganography:</span> Hiding data within audio frequencies (echo hiding, phase encoding).</p>
             <p><span style="color:#88ddff;"> Text Steganography:</span> Using whitespace, invisible characters (zero-width spaces) or format tricks.</p>
             <p><span style="color:#88ddff;">Network Steganography:</span> Covert channels in TCP/IP headers or timing patterns.</p>
-            <p>✨ In the Nebula Core archives, ancient engineers hid fragments of the virus counter-code inside landscape images. The key was always visible but never noticed — like whispers in a storm.</p>
+            <p>&gt;&gt; In the Nebula Core archives, ancient engineers hid fragments of the virus counter-code inside landscape images. The key was always visible but never noticed — like whispers in a storm.</p>
             <hr style="border-color:#2588aa;">
             <p style="font-size:12px;"><em>"Steganography allows messages to travel undetected — perfect for resistance and digital ark preservation."</em> — Elara Vance.</p>
         </div>
